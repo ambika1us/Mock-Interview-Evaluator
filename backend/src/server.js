@@ -18,7 +18,13 @@ async function main() {
     console.log(`[api] LLM evaluator: ${env.llm.apiKey ? 'enabled' : 'offline fallback (set USER_LLM_API_KEY to enable)'}`);
   });
 }
+app.get("/", (req, res) => {
+  res.send("API is running 🚀");
+});
 
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 main().catch((err) => {
   console.error('[fatal] failed to start server:', err);
   process.exit(1);
