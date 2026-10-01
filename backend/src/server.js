@@ -12,8 +12,9 @@ async function main() {
   }
 
   const app = createApp();
-  app.listen(env.port, () => {
-    console.log(`[api] listening on http://localhost:${env.port}`);
+  const PORT = process.env.PORT || env.port || 3001;
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`[api] listening on http://0.0.0.0:${PORT}`);
     console.log(`[api] LLM evaluator: ${env.llm.apiKey ? 'enabled' : 'offline fallback (set USER_LLM_API_KEY to enable)'}`);
   });
 }
