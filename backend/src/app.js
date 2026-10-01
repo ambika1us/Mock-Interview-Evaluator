@@ -1,36 +1,27 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import authRoutes from './routes/auth.js';
-import categoryRoutes from './routes/categories.js';
-import interviewRoutes from './routes/interviews.js';
-import adminRoutes from './routes/admin.js';
-import { notFound, errorHandler } from './middleware/error.js';
-import { llmEnabled } from './config/env.js';
+import express from "express";
+import cors from "cors";
 
 export function createApp() {
   const app = express();
 
+  // ✅ basic middleware
   app.use(cors());
-  app.use(express.json({ limit: '2mb' }));
-  app.use(morgan('dev'));
+  app.use(express.json());
 
-  app.get('/api/health', (req, res) => {
-    res.json({
-      status: 'ok',
-      service: 'mock-interview-api',
-      llmEvaluator: llmEnabled() ? 'enabled' : 'offline-fallback',
-      time: new Date().toISOString(),
-    });
+  // ✅ ROOT route (very important)
+  app.get("/", (req, res) => {
+    res.send("API is running 🚀");
   });
 
-  app.use('/api/auth', authRoutes);
-  app.use('/api/categories', categoryRoutes);
-  app.use('/api/interviews', interviewRoutes);
-  app.use('/api/admin', adminRoutes);
+  // ✅ HEALTH route
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok" });
+  });
 
-  app.use(notFound);
-  app.use(errorHandler);
+  // ✅ fallback (prevents 502)
+  app.use((req, res) => {
+    res.status(404).json({ error: "Not Found" });
+  });
 
-  return app;
+  return app; // ✅ VERY IMPORTANT
 }
