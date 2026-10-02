@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 8080;
 async function start() {
   try {
     await connectDb();
+    console.log(">>> SEED FIX v1 IS LIVE <<<");
     await seedIfEmpty();                    // ✅ ADD — creates admin if missing
     const app = createApp();
     app.listen(PORT, "0.0.0.0", () => {
