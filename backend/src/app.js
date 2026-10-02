@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
-import authRoutes from "./routes/auth.js"; // ✅ ADD THIS
-
+import authRoutes from "./routes/auth.js";
+import adminRoutes from "./routes/admin.js"; // ✅ add if admin routes exist
 
 export function createApp() {
   const app = express();
@@ -17,12 +17,29 @@ export function createApp() {
     res.json({ status: "ok" });
   });
 
-  // ✅ ADD THIS (CRITICAL FIX)
+  // Routes
   app.use("/api/auth", authRoutes);
+  app.use("/api/admin", adminRoutes); // ✅ add if you have admin.js
 
-  // fallback
+  // 404 handler
   app.use((req, res) => {
     res.status(404).json({ error: "Not Found" });
+  });
+
+  // ✅ JSON error handler — MUST be last and MUST have 4 args
+  app.use((err, req, res, next) => {
+    // Malformed JSON from body-parser
+    if (err instanceof SyntaxError && "body" in err) {
+      return res.status(400).json({ error: "Malformed JSON in request body" });
+    }
+
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Server error";
+
+    // Log 5xx errors for debugging (500s are real bugs, don't hide them)
+    if (status >= 500) console.error("[error]", err);
+
+    res.status(status).json({ error: message });
   });
 
   return app;
