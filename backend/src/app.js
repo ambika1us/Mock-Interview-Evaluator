@@ -1,27 +1,28 @@
 import express from "express";
 import cors from "cors";
+import authRoutes from "./routes/auth.js"; // ✅ ADD THIS
 
 export function createApp() {
   const app = express();
 
-  // ✅ basic middleware
   app.use(cors());
   app.use(express.json());
 
-  // ✅ ROOT route (very important)
   app.get("/", (req, res) => {
     res.send("API is running 🚀");
   });
 
-  // ✅ HEALTH route
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
   });
 
-  // ✅ fallback (prevents 502)
+  // ✅ ADD THIS (CRITICAL FIX)
+  app.use("/api/auth", authRoutes);
+
+  // fallback
   app.use((req, res) => {
     res.status(404).json({ error: "Not Found" });
   });
 
-  return app; // ✅ VERY IMPORTANT
+  return app;
 }
