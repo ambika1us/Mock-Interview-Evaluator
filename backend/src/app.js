@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import adminRoutes from "./routes/admin.js"; // ✅ add if admin routes exist
+import categoriesRoutes from "./routes/categories.js";   // ← ADD
+import interviewRoutes from "./routes/interviews.js";
 
 export function createApp() {
   const app = express();
@@ -20,6 +22,8 @@ export function createApp() {
   // Routes
   app.use("/api/auth", authRoutes);
   app.use("/api/admin", adminRoutes); // ✅ add if you have admin.js
+  app.use("/api/categories", categoriesRoutes);   // ← ADD
+  app.use("/api/interviews", interviewRoutes); 
 
   // 404 handler
   app.use((req, res) => {
