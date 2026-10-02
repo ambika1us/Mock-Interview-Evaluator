@@ -1,37 +1,15 @@
-import mongoose from 'mongoose';
-import { env } from '../config/env.js';
+import mongoose from "mongoose";
 
-let memoryServer = null;
-
-/**
- * Connects to MongoDB.
- * - When MONGODB_URI is provided (e.g. MongoDB Atlas) it connects to that cluster.
- * - Otherwise it boots an embedded, in-memory MongoDB so local/preview runs work
- *   without any external dependency. Data is not persisted in that mode.
- */
-export async function connectDb() {
-  mongoose.set('strictQuery', true);
-
-  let uri = env.mongoUri;
+export default async function connectDb() {
+  const uri = process.env.MONGODB_URI;
 
   if (!uri) {
-    const { MongoMemoryServer } = await import('mongodb-memory-server');
-    memoryServer = await MongoMemoryServer.create({
-      instance: { dbName: 'mock_interview' },
-    });
-    uri = memoryServer.getUri('mock_interview');
-    console.log('[db] MONGODB_URI not set - started embedded in-memory MongoDB');
+    throw new Error("MONGODB_URI not set");
   }
 
-  await mongoose.connect(uri, { serverSelectionTimeoutMS: 15000 });
-  console.log(`[db] connected to MongoDB (${env.mongoUri ? 'external' : 'in-memory'})`);
-  return mongoose.connection;
-}
+  await mongoose.connect(uri, {
+    serverSelectionTimeoutMS: 5000
+  });
 
-export async function disconnectDb() {
-  await mongoose.disconnect();
-  if (memoryServer) {
-    await memoryServer.stop();
-    memoryServer = null;
-  }
+  console.log("✅ MongoDB connected");
 }

@@ -1,47 +1,23 @@
-import { createApp } from './app.js';
-import { connectDb } from './db/connect.js';
-import { env } from './config/env.js';
-import { seedIfEmpty } from './seed.js';
+import { createApp } from "./app.js";
+import connectDb from "./db/connect.js";
 
-async function main() {
-  // ✅ Connect DB
-  await connectDb();
+const PORT = process.env.PORT || 8080;
 
+async function start() {
   try {
-    await seedIfEmpty();
+    // connect DB
+    await connectDb();
+
+    const app = createApp();
+
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`✅ Server running on port ${PORT}`);
+    });
+
   } catch (err) {
-    console.warn('[seed] skipped:', err.message);
+    console.error("❌ Server failed to start:", err);
+    process.exit(1);
   }
-
-  // ✅ Create app
-  const app = createApp();
-
-  // ✅ Add routes HERE (inside main, after app is created)
-  app.get("/", (req, res) => {
-    res.send("API is running 🚀");
-  });
-
-  app.get("/api/health", (req, res) => {
-    res.json({ status: "ok" });
-  });
-
-  // ✅ Start server (Railway compatible)
-  const PORT = process.env.PORT || env.port || 3001;
-
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[api] listening on http://0.0.0.0:${PORT}`);
-    console.log(
-      `[api] LLM evaluator: ${
-        env.llm?.apiKey
-          ? "enabled"
-          : "offline fallback (set USER_LLM_API_KEY to enable)"
-      }`
-    );
-  });
 }
 
-// ✅ Start app safely
-main().catch((err) => {
-  console.error('[fatal] failed to start server:', err);
-  process.exit(1);
-});
+start();
