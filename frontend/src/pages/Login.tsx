@@ -67,7 +67,7 @@ export default function Login() {
           New candidate? <Link to="/register">Create an account</Link>
         </p>
         <div className="demo-hint">
-          <strong>Demo admin:</strong> admin@example.com / admin123
+          <strong>Demo admin:</strong> admin@example.com / xxxxxx
         </div>
       </div>
     </div>
